@@ -9,8 +9,6 @@ services:
       - namenode:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=test
-    env_file:
-      - ./hadoop.env
     deploy:
       mode: replicated
       replicas: 1
