@@ -43,7 +43,7 @@ services:
       - hadoop-net
 
   nodemanager:
-    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.1.1-java8
+    image: hadoop-nodemanager
     environment:
       SERVICE_PRECONDITION: "namenode:50070 datanode:50075 resourcemanager:8088"
     deploy:
