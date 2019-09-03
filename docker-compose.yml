@@ -3,8 +3,6 @@ version: '3.3'
 services:
   namenode:
     image: hadoop-namenode
-    networks:
-      - hbase
     volumes:
       - namenode:/hadoop/dfs/name
     environment:
@@ -14,11 +12,11 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
+    networks:
+      - hadoop-net
 
   datanode:
     image: hadoop-datanode
-    networks:
-      - hbase
     volumes:
       - datanode:/hadoop/dfs/data
     environment:
@@ -27,11 +25,11 @@ services:
       mode: global
       restart_policy:
         condition: on-failure
+    networks:
+      - hadoop-net
 
   resourcemanager:
     image: hadoop-resourcemanager
-    networks:
-      - hbase
     environment:
       SERVICE_PRECONDITION: "namenode:50070 datanode:50075"
     deploy:
@@ -41,22 +39,22 @@ services:
         condition: on-failure
     healthcheck:
       disable: true
+    networks:
+      - hadoop-net
 
   nodemanager:
     image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.1.1-java8
-    networks:
-      - hbase
     environment:
       SERVICE_PRECONDITION: "namenode:50070 datanode:50075 resourcemanager:8088"
     deploy:
       mode: global
       restart_policy:
         condition: on-failure
+    networks:
+      - hadoop-net
 
   historyserver:
     image: hadoop-historyserver
-    networks:
-      - hbase
     volumes:
       - hadoop_historyserver:/hadoop/yarn/timeline
     environment:
@@ -64,6 +62,8 @@ services:
     deploy:
       mode: replicated
       replicas: 1
+    networks:
+      - hadoop-net
 
 volumes:
   datanode:
@@ -71,6 +71,7 @@ volumes:
   hadoop_historyserver:
 
 networks:
-  hbase:
-    external:
-      name: hbase
+  hadoop-net:
+    driver: overlay
+    attachable: true
+
