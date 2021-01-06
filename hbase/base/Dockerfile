@@ -35,4 +35,7 @@ ENV PATH $HBASE_PREFIX/bin/:$PATH
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
 
+# Zookeeper ports
+EXPOSE 2181 2888 3888
+
 ENTRYPOINT ["/entrypoint.sh"]
