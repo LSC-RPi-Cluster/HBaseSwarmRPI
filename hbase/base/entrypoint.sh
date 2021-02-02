@@ -1,5 +1,16 @@
 #!/bin/bash
 
+echo "--- hosts antes ---"
+cat /etc/hosts
+echo "--- fim ---"
+cp /etc/hosts /etc/hosts2
+sed -i '/localhost/d' /etc/hosts2
+cat /etc/hosts2 > /etc/hosts
+
+echo "--- hosts depois ---"
+cat /etc/hosts
+echo "--- fim ---"
+
 function addProperty() {
   local path=$1
   local name=$2

@@ -14,24 +14,25 @@ services:
       - CLUSTER_NAME=test
     env_file:
       - ./hadoop.env
-#    ports:
-#      - target: 9870
-#        published: 9870
-#        mode: host
-#    ports:
-#      - 9000:9000 
     deploy:
       mode: replicated
       replicas: 1
-      endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
         max_attempts: 3
         window: 120s
       placement:
-#        max_replicas_per_node: 1
+        max_replicas_per_node: 1
         constraints:
           - node.hostname == rpi4-01
+    ports:
+      - target: 9870
+        published: 9870
+        mode: host
+
+      - target: 9000
+        published: 9000
+        mode: host
 
   #####################
   #   HDFS DATANODE   #
@@ -44,22 +45,23 @@ services:
       - datanode:/hadoop/dfs/data
     env_file:
       - ./hadoop.env
-    ports:
-      - 50075:50075
     environment:
       SERVICE_PRECONDITION: "namenode:9000"
     deploy:
       mode: replicated
       replicas: 1
-      endpoint_mode: dnsrr      
       restart_policy:
         condition: on-failure
         max_attempts: 3
         window: 120s
       placement:
-#        max_replicas_per_node: 1
+        max_replicas_per_node: 1
         constraints:
           - node.hostname == rpi4-02
+    ports:
+      - target: 50075
+        published: 50075
+        mode: host
 
   
   #####################
@@ -67,67 +69,144 @@ services:
   #####################
   master:
     image: lucasfs/hbase-hmaster 
+    hostname: master
     networks:
       - cluster_net
     deploy:
       mode: replicated
       replicas: 1
-      endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
         max_attempts: 3
         window: 120s
       placement:
-#        max_replicas_per_node: 1
+        max_replicas_per_node: 1
         constraints:
           - node.hostname == rpi4-01
     env_file:
       - ./hbase.env
     environment:
       SERVICE_PRECONDITION: "namenode:9000 datanode:50075"
-#    ports:
-#      - target: 16010
-#        published: 16010
-#        mode: host
     ports:
-      - 16000:16000
-      - 2888:2888
-      - 3888:3888
-      - 2181:2181
+      - target: 16000
+        published: 16000
+        mode: host
+
+      - target: 16010
+        published: 16010
+        mode: host
+
+      # - target: 2888
+      #   published: 2888
+      #   mode: host
+
+      # - target: 3888
+      #   published: 3888
+      #   mode: host
+
+      # - target: 2181
+      #   published: 2181
+      #   mode: host
+ 
   ##########################
   #   HBASE REGIONSERVER   #
   ##########################
   regionserver:
     image: lucasfs/hbase-hregionserver
+    hostname: regionserver
     networks:
       - cluster_net
     deploy:
       mode: replicated
       replicas: 1
-      endpoint_mode: dnsrr
+      # endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
         max_attempts: 3
         window: 120s
       placement:
-#        max_replicas_per_node: 1
+        max_replicas_per_node: 1
         constraints:
           - node.hostname == rpi4-02
     ports:
-      - 16020:16020
-      - 2888:2888
-      - 3888:3888
-      - 2181:2181
+      - target: 16020
+        published: 16020
+        mode: host
+
+      # - target: 2888
+      #   published: 2888
+      #   mode: host
+
+      # - target: 3888
+      #   published: 3888
+      #   mode: host
+
+      # - target: 2181
+      #   published: 2181
+      #   mode: host
+
     env_file:
       - ./hbase.env
     environment:
       HBASE_CONF_hbase_regionserver_hostname: regionserver
-      SERVICE_PRECONDITION: "namenode:9000 datanode:50075 master:16000"
+      SERVICE_PRECONDITION: "namenode:9000 datanode:50075 zoo1:2181"
 
+  ##########################
+  #   ZOOKEEPER SERVER 1   #
+  ##########################
+  zoo1:
+    image: zookeeper:3.6.2
+    networks:
+      - cluster_net
+    volumes:
+      - zoo1_data:/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi4-01
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888 server.2=zoo2:2888:3888
+    ports:
+      - target: 2181
+        published: 2181
+        mode: host
+
+  ##########################
+  #   ZOOKEEPER SERVER 2   #  
+  ##########################
+
+  zoo2:
+    image: zookeeper:3.6.2
+    networks:
+      - cluster_net
+    volumes:
+      - zoo2_data:/data
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi4-01
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888 server.2=0.0.0.0:2888:3888
+    ports:
+      - target: 2181
+        published: 2181
+        mode: host
+
+###################################################
 
 volumes:
   datanode:
   namenode:
+  zoo1_data:
+  zoo2_data:
 
 networks:
   cluster_net:
