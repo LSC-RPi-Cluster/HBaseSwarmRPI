@@ -1,0 +1,102 @@
+version: "3.8"
+
+services:
+  #####################
+  #   HDFS NAMENODE   #
+  #####################
+  namenode:
+    image: lucasfs/hadoop-namenode
+    networks:
+      - cluster_net
+    volumes:
+      - namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+    deploy:
+      mode: replicated
+      replicas: 1
+      # endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        # max_attempts: 3
+        # window: 120s
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi4-01
+    ports:
+      - target: 9870
+        published: 9870
+        mode: host
+      
+      - target: 50075
+        published: 50075
+        mode: host
+
+  #####################
+  #   HDFS DATANODE   #
+  #####################
+  datanode1:
+    image: lucasfs/hadoop-datanode
+    networks:
+      - cluster_net
+    volumes:
+      - datanode1:/hadoop/dfs/data
+    env_file:
+      - ./hadoop.env
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000"
+    deploy:
+      mode: replicated
+      replicas: 1
+      # endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi4-02
+    # ports:
+    #   - target: 50075
+    #     published: 50075
+    #     mode: host
+
+
+  #####################
+  #   HDFS DATANODE   #
+  #####################
+  datanode2:
+    image: lucasfs/hadoop-datanode
+    networks:
+      - cluster_net
+    volumes:
+      - datanode2:/hadoop/dfs/data
+    env_file:
+      - ./hadoop.env
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000"
+    deploy:
+      mode: replicated
+      replicas: 1
+      # endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi3-01
+    # ports:
+    #   - target: 50075
+    #     published: 50075
+    #     mode: host
+volumes:
+  datanode1:
+  datanode2:
+  namenode:
+
+networks:
+  cluster_net:
+    external: true
+    name: hadoop-net  

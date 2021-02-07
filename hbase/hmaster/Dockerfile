@@ -1,4 +1,4 @@
-FROM lucasfs/hbase-base
+FROM lucasfs/hbase-base:hbase-2.2.5
 
 COPY run.sh /run.sh
 RUN chmod +x /run.sh

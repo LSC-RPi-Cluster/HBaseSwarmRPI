@@ -1,0 +1,93 @@
+version: "3.8"
+
+services:
+  
+  ##########################
+  #   ZOOKEEPER SERVER 1   #
+  ##########################
+  zoo1:
+    image: lucasfs/zookeeper-armv7
+    hostname: zoo1
+    networks:
+      - cluster_net
+    volumes:
+      - zoo1_data:/data
+    deploy:
+      # restart_policy:
+      #   condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi4-01
+    environment:
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok, stat
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181
+    ports:
+      - 2181:2181
+    # ports:
+    #   - target: 2181
+    #     published: 2181
+    #     mode: host
+
+  ##########################
+  #   ZOOKEEPER SERVER 2   #  
+  ##########################
+
+  zoo2:
+    image: lucasfs/zookeeper-armv7
+    hostname: zoo2
+    networks:
+      - cluster_net
+    volumes:
+      - zoo2_data:/data
+    deploy:
+      # restart_policy:
+      #   condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi4-02
+    environment:
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok, stat
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181
+    ports:
+      - 2182:2181
+    # ports:
+    #   - target: 2181
+    #     published: 2181
+    #     mode: host
+
+
+  zoo3:
+    image: lucasfs/zookeeper-armv7
+    hostname: zoo2
+    networks:
+      - cluster_net
+    volumes:
+      - zoo2_data:/data
+    deploy:
+      # restart_policy:
+      #   condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi3-01
+    environment:
+      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok, stat
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181
+    ports:
+      - 2183:2181
+###################################################
+
+volumes:
+  zoo1_data:
+  zoo2_data:
+  zoo3_data:
+
+networks:
+  cluster_net:
+    external: true
+    name: hadoop-net  

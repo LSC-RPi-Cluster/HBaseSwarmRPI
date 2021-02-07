@@ -13,7 +13,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-armhf/
 
-ENV HBASE_VERSION 2.2.6
+ENV HBASE_VERSION 2.2.5
 ENV HBASE_URL http://www.apache.org/dist/hbase/$HBASE_VERSION/hbase-$HBASE_VERSION-bin.tar.gz
 RUN set -x \
     && curl -fSL "$HBASE_URL" -o /tmp/hbase.tar.gz \
@@ -34,8 +34,5 @@ ENV PATH $HBASE_PREFIX/bin/:$PATH
 
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
-
-# Zookeeper ports
-EXPOSE 2181 2888 3888
 
 ENTRYPOINT ["/entrypoint.sh"]
