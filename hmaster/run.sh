@@ -57,4 +57,6 @@ do
     wait_for_boot ${i} 
 done
 
-echo "Hmaster Done!"
+echo "Starting HBase cluster..."
+
+start-hbase.sh

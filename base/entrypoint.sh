@@ -63,6 +63,9 @@ do
     echo ${i} >> /etc/hadoop/workers    
 done
 
+# Set JAVA_HOME in hbase-env.sh
+echo "export JAVA_HOME=$JAVA_HOME" >> $HBASE_PREFIX/conf/hbase-env.sh
+
 # Start SSH service
 /usr/sbin/sshd
 
