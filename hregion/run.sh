@@ -3,7 +3,7 @@
 function wait_for_boot()
 {
     local server=$1
-    local port=
+    local port=2122
 
     local retry_seconds=5
     local max_try=100
@@ -13,7 +13,7 @@ function wait_for_boot()
     result=$?
 
     until [ $result -eq 0 ]; do
-      echo "[$i/$max_try] check for ${server}:${port}..."
+      echo "[$i/$max_try] check for namenode in ${server}:${port}..."
       echo "[$i/$max_try] ${server}:${port} is not available yet"
       if (( $i == $max_try )); then
         echo "[$i/$max_try] ${server}:${port} is still not available; giving up after ${max_try} tries."
@@ -30,8 +30,9 @@ function wait_for_boot()
     echo "[$i/$max_try] $server:${port} is available!"
 }
 
-# TODO: implementar funcção para verificar se namenode já está on
 wait_for_boot $HBASE_CONF_hbase_master_hostname
+
+sleep $TIME_TO_WAIT
 
 datadir=`echo $HDFS_CONF_dfs_datanode_data_dir | perl -pe 's#file://##'`
 if [ ! -d $datadir ]; then

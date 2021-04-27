@@ -1,0 +1,26 @@
+version: "3.8"
+
+networks:
+  cluster_net:
+    external: true
+    name: hbase  
+  
+services:
+
+  hmaster:
+    image: lucasfs/hbase:hmaster-
+    env_file:
+      - ./hbase.env
+    networks:
+      - cluster_net
+    hostname: hmaster
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 5
+        window: 120s
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.labels.type == master
+
