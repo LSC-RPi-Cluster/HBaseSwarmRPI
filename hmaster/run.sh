@@ -60,3 +60,5 @@ done
 echo "Starting HBase cluster..."
 
 start-hbase.sh
+
+tail -f $HBASE_PREFIX/logs/hbase-root-master-hmaster.log

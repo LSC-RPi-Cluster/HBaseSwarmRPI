@@ -12,7 +12,7 @@ start_hmaster_stand() {
 		--publish published=16010,target=16010,mode=host \
 		--publish published=9870,target=9870,mode=host \
 		--entrypoint /bin/bash \
-		lucasfs/hbase:hmaster-x86
+		lucasfs/hbase-armhf:hmaster
 }
 
 
@@ -26,7 +26,7 @@ start_hregion1_stand() {
 		--env-file ./hbase.env \
 		--env HBASE_CONF_hbase_regionserver_hostname=hregion1 \
 		--entrypoint /bin/bash \
-		lucasfs/hbase:hregion-x86
+		lucasfs/hbase-armhf:hregion
 }
 
 start_hregion2_stand() {
@@ -39,7 +39,7 @@ start_hregion2_stand() {
 		--env-file ./hbase.env \
 		--env HBASE_CONF_hbase_regionserver_hostname=hregion2 \
 		--entrypoint /bin/bash \
-		lucasfs/hbase:hregion-x86
+		lucasfs/hbase-armhf:hregion
 }
 
 start_hmaster() {
@@ -53,7 +53,7 @@ start_hmaster() {
 		--env-file ./hbase.env \
 		--publish published=16010,target=16010,mode=host \
 		--publish published=9870,target=9870,mode=host \
-		lucasfs/hbase:hmaster-x86
+		lucasfs/hbase-armhf:hmaster
 }
 
 start_hregion1() {
@@ -65,7 +65,7 @@ start_hregion1() {
 		--endpoint-mode dnsrr \
 		--env-file ./hbase.env \
 		--env HBASE_CONF_hbase_regionserver_hostname=hregion1 \
-		lucasfs/hbase:hregion-x86
+		lucasfs/hbase-armhf:hregion
 }
 
 start_hregion2() {
@@ -77,7 +77,7 @@ start_hregion2() {
 		--endpoint-mode dnsrr \
 		--env-file ./hbase.env \
 		--env HBASE_CONF_hbase_regionserver_hostname=hregion2 \
-		lucasfs/hbase:hregion-x86
+		lucasfs/hbase-armhf:hregion
 }
 
 start_zoo() {

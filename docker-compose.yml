@@ -1,0 +1,126 @@
+version: "3.8"
+
+services:
+  hmaster:
+    image: lucasfs/hbase-armhf:hmaster
+    hostname: hmaster
+    # domainname: cluster_net
+    networks:
+      - cluster_net
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hbase.env
+    deploy:
+      # mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi4-01
+    ports:
+      - target: 9870
+        published: 9870
+        mode: host
+
+      - target: 16010
+        published: 16010
+        mode: host
+
+  hregion1:
+    image: lucasfs/hbase-armhf:hregion
+    hostname: hregion1
+    # domainname: cluster_net
+    networks:
+      - cluster_net
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=hregion1
+      - TIME_TO_WAIT=1
+    env_file:
+      - ./hbase.env
+    deploy:
+      # mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi4-02
+
+  hregion2:
+    image: lucasfs/hbase-armhf:hregion
+    hostname: hregion2
+    # domainname: cluster_net
+    networks:
+      - cluster_net
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=hregion2
+      - TIME_TO_WAIT=120
+    env_file:
+      - ./hbase.env
+    deploy:
+      # mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi3-01
+
+#####################################
+
+  hregion3:
+    image: lucasfs/hbase-armhf:hregion
+    hostname: hregion3
+    # domainname: cluster_net
+    networks:
+      - cluster_net
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=hregion3
+      - TIME_TO_WAIT=120
+    env_file:
+      - ./hbase.env
+    deploy:
+      # mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi3-02
+
+  hregion4:
+    image: lucasfs/hbase-armhf:hregion
+    hostname: hregion4
+    # domainname: cluster_net
+    networks:
+      - cluster_net
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=hregion4
+      - TIME_TO_WAIT=120
+    env_file:
+      - ./hbase.env
+    deploy:
+      # mode: replicated
+      replicas: 1
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+          - node.hostname == rpi3-03
+
+networks:
+  cluster_net:
+    external: true
+    name: hadoop-net  

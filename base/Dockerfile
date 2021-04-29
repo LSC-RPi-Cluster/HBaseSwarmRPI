@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM arm32v7/ubuntu:18.04
 
 LABEL maintainer="github.com/lucas-fs"
 
@@ -12,7 +12,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       openssh-server \
     && rm -rf /var/lib/apt/lists/*
       
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-armhf/
 
 # -------- HADOOP ---------- 
 
@@ -59,11 +59,6 @@ ENV HBASE_PREFIX=/opt/hbase-$HBASE_VERSION
 
 # ---------------------------------------
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      nano \
-      iputils-ping \
-    && rm -rf /var/lib/apt/lists/*
-
 # Passwordless SSH
 RUN rm -f /etc/ssh/ssh_host_dsa_key
 RUN rm -f /etc/ssh/ssh_host_rsa_key
@@ -102,5 +97,3 @@ EXPOSE 9871 9870 9820 9867 9866 9865 9864 9600 9000
 
 # HBase ports
 EXPOSE 16000 16010 16002 16012 16020 16030
-
-ENTRYPOINT ["/entrypoint.sh"]
