@@ -30,6 +30,7 @@ function wait_for_boot()
     echo "[$i/$max_try] $server:${port} is available!"
 }
 
+# Wait for namenode
 wait_for_boot $HBASE_CONF_hbase_master_hostname
 
 datadir=`echo $HDFS_CONF_dfs_datanode_data_dir | perl -pe 's#file://##'`
@@ -39,3 +40,6 @@ if [ ! -d $datadir ]; then
 fi
 
 $HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR datanode
+
+# touch $HBASE_PREFIX/logs/hbase-root-regionserver-$HOSTNAME.log
+# tail -f $HBASE_PREFIX/logs/hbase-root-regionserver-$HOSTNAME.log

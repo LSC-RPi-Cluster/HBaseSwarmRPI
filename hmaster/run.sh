@@ -49,13 +49,13 @@ if [ "`ls -A $namedir`" == "" ]; then
   $HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR namenode -format $CLUSTER_NAME
 fi
 
-$HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR namenode &
-
 # Check if all Regionservers have already been initialized
 for i in ${REGIONSERVERS[@]}
 do
     wait_for_boot ${i} 
 done
+
+$HADOOP_HOME/bin/hdfs --config $HADOOP_CONF_DIR namenode &
 
 echo "Starting HBase cluster..."
 
