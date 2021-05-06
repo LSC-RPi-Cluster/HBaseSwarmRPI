@@ -7,4 +7,4 @@ RUN chmod a+x /run.sh
 
 EXPOSE 9864
 
-CMD ["/bin/bash", "-c","/entrypoint.sh && /run.sh"]
+CMD ["/run.sh"]

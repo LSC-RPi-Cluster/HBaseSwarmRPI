@@ -55,7 +55,11 @@ RUN mkdir -p /hadoop-data/hdfs/namenode
 RUN mkdir -p /hadoop-data/hdfs/datanode
 
 ENV HBASE_PREFIX=/opt/hbase-$HBASE_VERSION
-# ENV HBASE_CONF_DIR=/etc/hbase
+ENV HBASE_CONF_DIR=/etc/hbase
+
+# Fix JRuby lib ARMv7 incompatibility
+RUN rm $HBASE_PREFIX/lib/ruby/*.jar
+RUN curl -fSL https://repo1.maven.org/maven2/org/jruby/jruby-complete/9.2.17.0/jruby-complete-9.2.17.0.jar -o $HBASE_PREFIX/lib/ruby/jruby-complete-9.2.17.0.jar
 
 # ---------------------------------------
 
@@ -81,7 +85,7 @@ RUN passwd -u root
 RUN service ssh start
 
 ENV USER=root
-ENV PATH $HADOOP_HOME/bin/:$PATH
+#ENV PATH $HADOOP_HOME/bin/:$PATH
 ENV PATH $HBASE_PREFIX/bin/:$PATH
 
 ADD entrypoint.sh /entrypoint.sh
@@ -97,3 +101,5 @@ EXPOSE 9871 9870 9820 9867 9866 9865 9864 9600 9000
 
 # HBase ports
 EXPOSE 16000 16010 16002 16012 16020 16030
+
+ENTRYPOINT ["/entrypoint.sh"]

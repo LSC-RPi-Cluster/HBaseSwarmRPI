@@ -12,7 +12,7 @@ x-base: &base-hregion
 networks:
   cluster_net:
     external: true
-    name: hadoop-net  
+    name: hbase-net  
 
 services:
   #####################

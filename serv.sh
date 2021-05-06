@@ -80,8 +80,10 @@ start_hregion2() {
 		lucasfs/hbase-armhf:hregion
 }
 
-start_zoo() {
-	docker stack deploy -c docker-compose-zoo.yml zookeeper
+buildall() {
+	docker build -t lucasfs/hbase-armhf:base ./base/ --no-cache && docker push lucasfs/hbase-armhf:base
+	docker build -t lucasfs/hbase-armhf:hmaster ./hmaster/ --no-cache && docker push lucasfs/hbase-armhf:hmaster
+	docker build -t lucasfs/hbase-armhf:hregion ./hregion/ --no-cache && docker push lucasfs/hbase-armhf:hregion
 }
 
 killall() {
